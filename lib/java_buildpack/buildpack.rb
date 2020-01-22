@@ -50,7 +50,7 @@ module JavaBuildpack
     def detect
       tags = tag_detection('container', @containers, true)
       tags.concat tag_detection('JRE', @jres, true) unless tags.empty?
-      tags.concat tag_detection('coprocess', @jres, false) unless tags.empty?
+      tags.concat tag_detection('coprocess', @coprocess, false) unless tags.empty?
       tags.concat tag_detection('framework', @frameworks, false) unless tags.empty?
       tags << "java-buildpack=#{@buildpack_version.to_s false}" unless tags.empty?
       tags = tags.flatten.compact.sort
