@@ -69,6 +69,7 @@ module JavaBuildpack
 
       component_detection('JRE', @jres, true).first.compile
       component_detection('framework', @frameworks, false).each(&:compile)
+      #component_detection('coprocess', @coprocess, false).each(&:compile)
 
       container.compile
 
@@ -84,6 +85,7 @@ module JavaBuildpack
       no_container unless container
 
       commands = []
+      commands << component_detection('coprocess', @coprocess, false).map(&:release)
       commands << component_detection('JRE', @jres, true).first.release
 
       component_detection('framework', @frameworks, false).map(&:release)
@@ -149,6 +151,7 @@ module JavaBuildpack
       @jres = instantiate(components['jres'], mutable_java_home, component_info)
       @frameworks = instantiate(components['frameworks'], immutable_java_home, component_info)
       @containers = instantiate(components['containers'], immutable_java_home, component_info)
+      @coprocess = instantiate(components['coprocess'], immutable_java_home, component_info)
     end
 
     def component_detection(type, components, unique)
