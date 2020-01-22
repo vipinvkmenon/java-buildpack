@@ -69,7 +69,7 @@ module JavaBuildpack
 
       component_detection('JRE', @jres, true).first.compile
       component_detection('framework', @frameworks, false).each(&:compile)
-      #component_detection('coprocess', @coprocess, false).each(&:compile)
+      component_detection('coprocess', @coprocess, false).each(&:compile)
 
       container.compile
 
