@@ -31,8 +31,7 @@ module JavaBuildpack
       # @param [Hash] context a collection of utilities used the component
       def initialize(context)
         super(context)
-        
-        @logger   = JavaBuildpack::Logging::LoggerFactory.instance.get_logger JaegerAgent
+        @logger = JavaBuildpack::Logging::LoggerFactory.instance.get_logger JaegerAgent
       end
 
       # (see JavaBuildpack::Component::BaseComponent#detect)
@@ -42,35 +41,28 @@ module JavaBuildpack
 
       # (see JavaBuildpack::Component::BaseComponent#compile)
       def compile
-        download_tar(version,"#{repo}/v#{version}/jaeger-#{version}-linux-amd64.tar.gz")
-        FileUtils.mkdir(@droplet.root+"jaeger")
-        FileUtils.cp_r(@droplet.sandbox+"jaeger-agent", @droplet.root+"jaeger")
-        ca_file = File.new(@droplet.root+"jaeger"+"ca_cert.crt", "w")
-        ca_file.puts(credentials['tls_ca'])
-        tls_cert = File.new(@droplet.root+"jaeger"+"tls_cert.crt", "w")
-        tls_cert.puts(credentials['tls_cert'])
-        tls_key = File.new(@droplet.root+"jaeger"+"tls_key.key", "w")
-        tls_key.puts(credentials['tls_key'])
-        FileUtils.rm_rf(@droplet.sandbox) 
+        download_jaeger
+        generate_files
+        FileUtils.rm_rf(@droplet.sandbox)
       end
 
       # (see JavaBuildpack::Component::BaseComponent#release)
       def release
         [
-          "($PWD/jaeger/jaeger-agent",
-          "--reporter.grpc.tls=true",
-          "--reporter.grpc.tls.ca=$PWD/jaeger/ca_cert.crt",
-          "--reporter.grpc.tls.cert=$PWD/jaeger/tls_cert.crt",
-          "--reporter.grpc.tls.key=$PWD/jaeger/tls_key.key",
-          "--reporter.grpc.host-port="+credentials['jaeger-collector-url'],
-          "&)"
+          '($PWD/jaeger/jaeger-agent',
+          '--reporter.grpc.tls=true',
+          '--reporter.grpc.tls.ca=$PWD/jaeger/ca_cert.crt',
+          '--reporter.grpc.tls.cert=$PWD/jaeger/tls_cert.crt',
+          '--reporter.grpc.tls.key=$PWD/jaeger/tls_key.key',
+          '--reporter.grpc.host-port=' + credentials['jaeger-collector-url'],
+          '&)'
         ].flatten.compact.join(' ')
       end
 
       protected
 
       def enabled?
-        @application.services.one_service? FILTER, APIURL,TLS_CA,TLS_CERT,TLS_KEY
+        @application.services.one_service? FILTER, APIURL, TLS_CA, TLS_CERT, TLS_KEY
       end
 
       private
@@ -82,10 +74,10 @@ module JavaBuildpack
 
       FILTER = /jaeger/.freeze
 
-      private_constant :APIURL, :TLS_CA, :TLS_CERT,:TLS_KEY,:FILTER
+      private_constant :APIURL, :TLS_CA, :TLS_CERT, :TLS_KEY, :FILTER
 
       def credentials
-        @application.services.find_service(FILTER, APIURL,TLS_CA,TLS_CERT,TLS_KEY)['credentials']
+        @application.services.find_service(FILTER, APIURL, TLS_CA, TLS_CERT, TLS_KEY)['credentials']
       end
 
       def version
@@ -96,9 +88,20 @@ module JavaBuildpack
         @configuration['repository_root']
       end
 
+      def download_jaeger
+        download_tar(version, "#{repo}/v#{version}/jaeger-#{version}-linux-amd64.tar.gz")
+        FileUtils.mkdir(@droplet.root + 'jaeger')
+        FileUtils.cp_r(@droplet.sandbox + 'jaeger-agent', @droplet.root + 'jaeger')
+      end
 
-
+      def generate_files
+        ca_file = File.new(@droplet.root + 'jaeger' + 'ca_cert.crt', 'w')
+        ca_file.puts(credentials['tls_ca'])
+        tls_cert = File.new(@droplet.root + 'jaeger' + 'tls_cert.crt', 'w')
+        tls_cert.puts(credentials['tls_cert'])
+        tls_key = File.new(@droplet.root + 'jaeger' + 'tls_key.key', 'w')
+        tls_key.puts(credentials['tls_key'])
+      end
     end
-
   end
 end

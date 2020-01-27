@@ -41,8 +41,9 @@ describe JavaBuildpack::Buildpack do
 
   let(:stub_coprocess1) { instance_double('StubCoprocess1', detect: nil, component_name: 'StubCoprocess1') }
 
-  let(:stub_coprocess2) { instance_double('StubCoprocess2', detect: nil, compile: nil, release: nil, component_name: 'StubCoprocess2') }
-
+  let(:stub_coprocess2) do
+    instance_double('StubCoprocess2', detect: nil, compile: nil, release: nil, component_name: 'StubCoprocess2')
+  end
 
   let(:buildpack) do
     buildpack = nil

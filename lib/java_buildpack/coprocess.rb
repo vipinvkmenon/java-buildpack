@@ -22,5 +22,4 @@ module JavaBuildpack
   # A module encapsulating all of the coprocess components for the Java buildpack
   module Coprocess
   end
-
 end
