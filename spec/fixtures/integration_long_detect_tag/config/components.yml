@@ -25,3 +25,5 @@ jres:
 # - "JavaBuildpack::Jre::OracleJRE"
 
 frameworks: []
+
+coprocess: []
