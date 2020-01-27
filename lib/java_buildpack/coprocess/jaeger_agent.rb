@@ -56,7 +56,15 @@ module JavaBuildpack
 
       # (see JavaBuildpack::Component::BaseComponent#release)
       def release
-      "($PWD/jaeger/jaeger-agent --reporter.grpc.tls=true --reporter.grpc.tls.ca=$PWD/jaeger/tls_cert.crt --reporter.grpc.tls.cert=$PWD/jaeger/tls_cert.crt --reporter.grpc.tls.key=$PWD/jaeger/tls_key.key --reporter.grpc.host-port="+credentials['jaeger-collector-url']+" &)"
+        [
+          "($PWD/jaeger/jaeger-agent",
+          "--reporter.grpc.tls=true",
+          "--reporter.grpc.tls.ca=$PWD/jaeger/ca_cert.crt",
+          "--reporter.grpc.tls.cert=$PWD/jaeger/tls_cert.crt",
+          "--reporter.grpc.tls.key=$PWD/jaeger/tls_key.key",
+          "--reporter.grpc.host-port="+credentials['jaeger-collector-url'],
+          "&)"
+        ].flatten.compact.join(' ')
       end
 
       protected
