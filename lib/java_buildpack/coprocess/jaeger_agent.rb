@@ -89,9 +89,13 @@ module JavaBuildpack
       end
 
       def download_jaeger
-        download_tar(version, "#{repo}/v#{version}/jaeger-#{version}-linux-amd64.tar.gz")
-        FileUtils.mkdir(@droplet.root + 'jaeger')
-        FileUtils.cp_r(@droplet.sandbox + 'jaeger-agent', @droplet.root + 'jaeger')
+        JavaBuildpack::Util::Cache::InternetAvailability.instance.available(
+          true, 'The Jaeger Agent download location is always accessible'
+        ) do
+          download_tar(version, "#{repo}/v#{version}/jaeger-#{version}-linux-amd64.tar.gz")
+          FileUtils.mkdir(@droplet.root + 'jaeger')
+          FileUtils.cp_r(@droplet.sandbox + 'jaeger-agent', @droplet.root + 'jaeger')
+        end
       end
 
       def generate_files
