@@ -69,6 +69,23 @@ describe JavaBuildpack::Coprocess::JaegerAgent do
       expect(component.release).to eq expected_string
     end
 
+    it 'verifies the release string with additional parameter' do
+      ENV['JAEGER_ADDITIONAL_ARGUEMENTS'] = '--reporter.grpc.retry.max=3'
+
+      expected_string =
+        [
+          '($PWD/jaeger/jaeger-agent',
+          '--reporter.grpc.tls=true',
+          '--reporter.grpc.tls.ca=$PWD/jaeger/ca_cert.crt',
+          '--reporter.grpc.tls.cert=$PWD/jaeger/tls_cert.crt',
+          '--reporter.grpc.tls.key=$PWD/jaeger/tls_key.key',
+          '--reporter.grpc.host-port=test-collector',
+          '--reporter.grpc.retry.max=3',
+          '&)'
+        ].flatten.compact.join(' ')
+      expect(component.release).to eq expected_string
+    end
+
   end
 
 end

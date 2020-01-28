@@ -55,6 +55,7 @@ module JavaBuildpack
           '--reporter.grpc.tls.cert=$PWD/jaeger/tls_cert.crt',
           '--reporter.grpc.tls.key=$PWD/jaeger/tls_key.key',
           '--reporter.grpc.host-port=' + credentials['jaeger-collector-url'],
+          additional_arguements,
           '&)'
         ].flatten.compact.join(' ')
       end
@@ -105,6 +106,10 @@ module JavaBuildpack
         tls_cert.puts(credentials['tls_cert'])
         tls_key = File.new(@droplet.root + 'jaeger' + 'tls_key.key', 'w')
         tls_key.puts(credentials['tls_key'])
+      end
+
+      def additional_arguements
+        ENV['JAEGER_ADDITIONAL_ARGUEMENTS']
       end
     end
   end
