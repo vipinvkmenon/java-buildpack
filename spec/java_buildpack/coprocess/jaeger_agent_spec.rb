@@ -70,4 +70,5 @@ describe JavaBuildpack::Coprocess::JaegerAgent do
     end
 
   end
+
 end
